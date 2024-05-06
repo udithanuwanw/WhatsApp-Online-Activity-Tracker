@@ -18,7 +18,20 @@ const moduleRaid = function () {
   moduleRaid.mID  = Math.random().toString(36).substring(7);
   moduleRaid.mObj = {};
 
+  const isComet = parseInt(window.Debug?.VERSION?.split(".")?.[1]) >= 3000;
+
   fillModuleArray = function() {
+    if (isComet) {
+      const moduleKeys = Object.keys(require("__debug").modulesMap);
+      for (const moduleKey of moduleKeys) {
+        const module = require(moduleKey);
+        if (module) {
+          moduleRaid.mObj[moduleKey] = module;
+        } 
+      };
+      return;
+    };
+
     (window.webpackChunkbuild || window.webpackChunkwhatsapp_web_client).push([
       [moduleRaid.mID], {}, function(e) {
         Object.keys(e.m).forEach(function(mod) {
@@ -27,7 +40,7 @@ const moduleRaid = function () {
       }
     ]);
   }
-
+  
   fillModuleArray();
 
   get = function get (id) {
@@ -59,7 +72,6 @@ const moduleRaid = function () {
         } else {
           throw new TypeError('findModule can only find via string and function, ' + (typeof query) + ' was passed');
         }
-        
       }
     })
 
@@ -80,7 +92,8 @@ if (typeof module === 'object' && module.exports) {
   window.mR = moduleRaid();
 }
 window.mR = moduleRaid();
-window.Store = Object.assign({}, window.mR.findModule(m => m.default && m.default.Chat)[0].default);
+
+window.Store = Object.assign({}, window.mR.findModule(m => m && m.Chat)[1]); window.Store.Call = window.mR.findModule((module) => module && module.Call)[0].Call;
 
 function startnew(){
 var online = {};
