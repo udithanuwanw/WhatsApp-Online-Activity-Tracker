@@ -285,20 +285,28 @@ while True:
             sleep(30)
             driver.execute_script(webscript1)
             sleep(2)
+
+   while True:          
                     
-   try: 
+       try: 
+        
+                driver.find_elements(By.XPATH,'//*[@role="listitem"]')[random.randint(0,5)].click()
+                break
+       except:
+                pass
+   try:
+
+       el=driver.find_elements(By.XPATH,'//*[@role="textbox"]')[1]
     
-            driver.find_elements(By.XPATH,'//*[@role="listitem"]')[random.randint(0,5)].click()
+
+    
+       senndword='test'
+       for l in senndword:
+            sleep(0.1)
+            el.send_keys(l)
+       el.send_keys(4 * Keys.BACKSPACE)  
    except:
-            pass
-   
-   el=driver.find_elements(By.XPATH,'//*[@role="textbox"]')[1]
-    
-   senndword='test'
-   for l in senndword:
-        sleep(0.1)
-        el.send_keys(l)
-   el.send_keys(4 * Keys.BACKSPACE)    
+      pass        
    
    L=[]
    driver.execute_script(webscript2)
