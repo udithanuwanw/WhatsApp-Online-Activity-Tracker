@@ -7,9 +7,9 @@ import time
 import csv
 from datetime import datetime
 import os
-import telegram
 from selenium.webdriver.common.by import By
 import random
+import requests
 webscript1='''
 
 
@@ -181,12 +181,19 @@ startnew();
 
 
 '''
+  
+
 def notify_ending(message):
-    
-    token = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'#your telegram bot token
-    chat_id = '5214061330'#your telegram chat id
-    bot = telegram.Bot(token=token)
-    bot.sendMessage(chat_id=chat_id, text=message)
+    """Send a notification to a Telegram bot."""
+    TELEGRAM_BOT_TOKEN='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    TELEGRAM_CHAT_ID='5214061330'
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to send Telegram message: {e}")    
 class onlinestatescls():
    def __init__(self,phonenumber,status):
       self.phonenumber=phonenumber
