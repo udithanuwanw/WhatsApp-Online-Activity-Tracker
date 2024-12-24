@@ -1,3 +1,4 @@
+import json
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
@@ -10,183 +11,23 @@ import os
 from selenium.webdriver.common.by import By
 import random
 import requests
-webscript1='''
+
+# Load configuration from JSON file
+def load_config():
+    with open('config.json', 'r') as file:
+        return json.load(file)
 
 
 
-const moduleRaid = function () {
-  moduleRaid.mID  = Math.random().toString(36).substring(7);
-  moduleRaid.mObj = {};
+# Function to load JavaScript from an external file
+def load_web_script(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
 
-  const isComet = parseInt(window.Debug?.VERSION?.split(".")?.[1]) >= 3000;
-
-  fillModuleArray = function() {
-    if (isComet) {
-      const moduleKeys = Object.keys(require("__debug").modulesMap);
-      for (const moduleKey of moduleKeys) {
-        const module = require(moduleKey);
-        if (module) {
-          moduleRaid.mObj[moduleKey] = module;
-        } 
-      };
-      return;
-    };
-
-    (window.webpackChunkbuild || window.webpackChunkwhatsapp_web_client).push([
-      [moduleRaid.mID], {}, function(e) {
-        Object.keys(e.m).forEach(function(mod) {
-          moduleRaid.mObj[mod] = e(mod);
-        })
-      }
-    ]);
-  }
-  
-  fillModuleArray();
-
-  get = function get (id) {
-    return moduleRaid.mObj[id]
-  }
-
-  findModule = function findModule (query) {
-    results = [];
-    modules = Object.keys(moduleRaid.mObj);
-
-    modules.forEach(function(mKey) {
-      mod = moduleRaid.mObj[mKey];
-
-      if (typeof mod !== 'undefined') {
-        if (typeof query === 'string') {
-          if (typeof mod.default === 'object') {
-            for (key in mod.default) {
-              if (key == query) results.push(mod);
-            }
-          }
-
-          for (key in mod) {
-            if (key == query) results.push(mod);
-          }
-        } else if (typeof query === 'function') { 
-          if (query(mod)) {
-            results.push(mod);
-          }
-        } else {
-          throw new TypeError('findModule can only find via string and function, ' + (typeof query) + ' was passed');
-        }
-      }
-    })
-
-    return results;
-  }
-
-  return {
-    modules: moduleRaid.mObj,
-    constructors: moduleRaid.cArr,
-    findModule: findModule,
-    get: get
-  }
-}
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = moduleRaid;
-} else {
-  window.mR = moduleRaid();
-}
-window.mR = moduleRaid();
-
-window.Store = Object.assign({}, window.mR.findModule(m => m && m.Chat)[1]); window.Store.Call = window.mR.findModule((module) => module && module.Call)[0].Call;
-
-function startnew(){
-var online = {};
-var parentWindow ;
-
-window.Store.Presence.toArray().forEach(function(c) {
-if (!c || !c.id)
-return;
-
-if (!c.isSubscribed) {
-c.subscribe();
-				}
-if (!c.chatActive) {
-c.chatActive=true;
-				}	
-if (!c.hasData) {
-c.hasData=true;
-				}							
-
-
-if (c.isOnline == undefined)
-return;
-
-
-if (c.isOnline==true){
-	console.log(c.id+ '');
-	
-} 
-
-	});		
-		
-	}		
-
-			
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-webscript2='''
-
-function startnew(){
-var online = {};
-var parentWindow ;
-
-window.Store.Presence.toArray().forEach(function(c) {
-if (!c || !c.id)
-return;
-
-if (!c.isSubscribed) {
-c.subscribe();
-				}
-if (!c.chatActive) {
-c.chatActive=true;
-				}	
-if (!c.hasData) {
-c.hasData=true;
-				}							
-
-
-if (c.isOnline == undefined)
-return;
-
-
-if (c.isOnline==true){
-	console.log(c.id+ '');
-	
-} 
-
-	});		
-		
-	}		
-startnew();
-			
-            
-
-
-
-'''
   
 
 def notify_ending(message):
     """Send a notification to a Telegram bot."""
-    TELEGRAM_BOT_TOKEN='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    TELEGRAM_CHAT_ID='5214061330'
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
     try:
@@ -207,6 +48,9 @@ def create_objects(target_trackinglist):
        myobjects[name]=myobjects.get(name,onlinestatescls(objectnumber,'offline'))    
 
 cwd=os.getcwd()
+config = load_config()
+TELEGRAM_BOT_TOKEN = config['TELEGRAM_BOT_TOKEN']
+TELEGRAM_CHAT_ID = config['TELEGRAM_CHAT_ID']
 with open('trackinglist.txt') as f:
     trackinglist  = [line.rstrip() for line in f]
 
@@ -225,8 +69,11 @@ sleep(30)
 
 myobjects={} 
 create_objects(trackinglist)
+web_script_path = 'web_script_1.js'
 
-driver.execute_script(webscript1)
+# Load the script
+web_script_1 = load_web_script(web_script_path)
+driver.execute_script(web_script_1)
 time_counter=0
 while True:
    if  time_counter==60*60:
@@ -269,7 +116,11 @@ while True:
       driver = webdriver.Chrome(options=options)
       driver.get ("https://web.whatsapp.com")
       sleep(30)    
-      driver.execute_script(webscript1)
+      web_script_path = 'web_script_1.js'
+
+      # Load the script
+      web_script_1 = load_web_script(web_script_path)
+      driver.execute_script(web_script_1)
       time_counter=0  
       sleep(2)  
                 
@@ -290,7 +141,11 @@ while True:
             
             driver.get ("https://web.whatsapp.com")
             sleep(30)
-            driver.execute_script(webscript1)
+            web_script_path = 'web_script_1.js'
+
+            # Load the script
+            web_script_1 = load_web_script(web_script_path)
+            driver.execute_script(web_script_1)
             sleep(2)
 
    while True:          
@@ -316,7 +171,11 @@ while True:
       pass        
    
    L=[]
-   driver.execute_script(webscript2)
+   web_script_path = 'web_script_2.js'
+
+    # Load the script
+   web_script_2 = load_web_script(web_script_path)
+   driver.execute_script(web_script_2)
    for e in driver.get_log('browser'):
       numberline=e['message']
       

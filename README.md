@@ -15,6 +15,7 @@ Download and install ChromeDriver appropriate for your Chrome browser version.
 Save the phone numbers of the contacts you want to track in a file named <b>trackinglist.txt</b>, with each phone number on a separate line.
 <h2>Execution</h2>
 
+Add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to config.json
 Run the Python script whatsapp_tracker.py.
 The script will open a Chrome browser window and navigate to WhatsApp Web.
 Scan the QR code to log in to your WhatsApp account.
